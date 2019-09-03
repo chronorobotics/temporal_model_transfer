@@ -1,0 +1,7 @@
+Model FreMEn param 2 has 07.5 error.
+Model None param 0 has 09.9 error.
+Model Mean param 0 has 09.8 error.
+Model Interval param 24 has 07.7 error.
+Model Adaptive param 1000 has 10.0 error.
+Model GMM param 2 has 07.3 error.
+Model DPGMM param 15 has 08.9 error.

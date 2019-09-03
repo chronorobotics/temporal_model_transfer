@@ -1,0 +1,1 @@
+srun -p cpu --mem-per-cpu=32G "mkdir ~/results$SLURM_JOB_ID; singularity run --writable -B ~/results$SLURM_JOB_ID:/results docker://blahajan/lotegr:temporal_exploration"

@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -ex
+
+# This is the master script for the capsule. When you click "Reproducible Run", the code in this file will execute.
+
+
+#DATASET="brayford"
+#export NUM_LOCATIONS=6
+#STRATEGY=MonteCarlo
+
+
+DATASET="aruba"
+export NUM_LOCATIONS=10
+STRATEGY=MonteCarlo
+export PLAN_GRANULARITY=10
+
+
+#
+# prepare enviromnent
+#
+cd /code
+
+if [[ ! -d "tmp" ]]; then
+    mkdir tmp bin obj
+
+    ln -s ../results ./results
+    ln -s ../data ./data
+fi
+
+if [[ ! -d "/code/eval_scripts/tmp" ]]; then
+    mkdir /code/eval_scripts/tmp
+fi
+
+CXX=g++
+make -C src/
+make -C eval_scripts/
+
+ldconfig -v
+
+#
+# run experiment
+#
+
+if [[ ! -d "/results/$DATASET" ]]; then
+    mkdir /results/${DATASET}
+fi
+if [[ "$(ls -A "/data/precomputed_res")" ]]; then
+    cp /data/precomputed_res/* /results/${DATASET}/reports
+fi
+
+cd ./eval_scripts  
+
+# run tests 
+bash ./process_dataset.sh ${DATASET} ${STRATEGY}
+
+# prepare for evaluation 
+#make clean 
+#stat tmp
+
+#cd ..
+
+# visualize 
+bash ./summarize_results.sh ${DATASET} ${STRATEGY}
+mv ../summary.png ../results/${DATASET}/summary/summary-8-7days-${STRATEGY}-${PLAN_GRANULARITY}.png
+

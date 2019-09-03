@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+# install OpenCV, build with contrib
+
+mkdir /dep
+mkdir /dep/opencv
+cd /dep/opencv
+git clone -b 3.4 --single-branch https://github.com/opencv/opencv.git
+git clone -b 3.4 --single-branch https://github.com/opencv/opencv_contrib.git
+mkdir opencv/build
+cd opencv/build
+cmake -DOPENCV_ENABLE_NONFREE:BOOL=ON -DOPENCV_EXTRA_MODULES_PATH=/dep/opencv/opencv_contrib/modules /dep/opencv/opencv
+make -j5
+make install
