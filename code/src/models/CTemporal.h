@@ -24,7 +24,9 @@ typedef enum{
 	TT_ADAPTIVE,
 	TT_NEAREST,
 	TT_DPGMM,
-	TT_HYPER
+	TT_HYPER,
+	TT_LFREMEN,
+	TT_NLFREMEN
 }ETemporalType;
 
 class CTemporal

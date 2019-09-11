@@ -15,7 +15,7 @@ aruba_topological_location_Msensor_mapping = {
     "master_bedroom":   ["M007"], #"M001", "M002", "M003", "M005", 
     "master_bathroom":  ["M004"],
     "corridor":         ["M022", "M030"],
-    "second_bathroom":  ["M031", "D003"],
+    "second_bathroom":  ["M029"], #"M031", "D003" - old-used sensors (Housekeeping)
     "office":           ["M027"], #"M025", "M026", 
     "second_bedroom":   ["M024"],
     "outside":          ["DOO1", "D002", "D004"]

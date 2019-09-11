@@ -25,6 +25,8 @@ typedef struct{
 	float period;	
 }SFrelement;
 
+int fremenSort(const void* i,const void* j);
+
 using namespace std;
 
 class CFrelement: public CTemporal

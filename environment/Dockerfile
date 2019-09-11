@@ -7,7 +7,7 @@ RUN apt-get update \
       "cmake=3.5.1-1ubuntu3" \
       "g++=4:5.3.1-1ubuntu1" \
       "gdb=7.11.1-0ubuntu1~16.5" \
-      "ghostscript=9.26~dfsg+0-0ubuntu0.16.04.9" \
+      "ghostscript" \
       "gnuplot=4.6.6-3" \
       "graphviz=2.38.0-12ubuntu2.1" \
       "imagemagick=8:6.8.9.9-7ubuntu5.14" \

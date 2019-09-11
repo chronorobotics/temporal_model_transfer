@@ -9,7 +9,7 @@ set -ex
 #STRATEGY=MonteCarlo
 
 
-DATASET="aruba"
+DATASET="aruba1"
 export NUM_LOCATIONS=10
 STRATEGY=MonteCarlo
 export PLAN_GRANULARITY=10
@@ -25,6 +25,7 @@ if [[ ! -d "tmp" ]]; then
 
     ln -s ../results ./results
     ln -s ../data ./data
+    ln -s ../data/aruba/${DATASET} ./data/${DATASET}
 fi
 
 if [[ ! -d "/code/eval_scripts/tmp" ]]; then
@@ -35,14 +36,16 @@ CXX=g++
 make -C src/
 make -C eval_scripts/
 
-ldconfig -v
+chmod +x eval_scripts/t-test
+
+ldconfig -v > /dev/null
 
 #
 # run experiment
 #
 
 if [[ ! -d "/results/$DATASET" ]]; then
-    mkdir /results/${DATASET}
+    mkdir -p /results/${DATASET}
 fi
 if [[ "$(ls -A "/data/precomputed_res")" ]]; then
     cp /data/precomputed_res/* /results/${DATASET}/reports
@@ -50,11 +53,16 @@ fi
 
 cd ./eval_scripts  
 
+ls -al ../data
+#stat ../data/${DATASET}
+#ls ../data/${DATASET}/
+
+
 # run tests 
 bash ./process_dataset.sh ${DATASET} ${STRATEGY}
 
 # prepare for evaluation 
-#make clean 
+#make clean
 #stat tmp
 
 #cd ..

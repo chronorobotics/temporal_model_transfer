@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>	
-#include <cstdlib>	
+#include <cstdlib>
+#include <unistd.h>
 #include "CTemporal.h"
 #include "CFrelement.h"
+#include "CLFrelem.h"
+#include "CNLFrelem.h"
 #include "CPerGaM.h"
 #include "CPythonDPGMM.h"
 #include "CPythonForkDPGMM.h"
@@ -38,6 +41,8 @@ float numCells[NUM_LOCATIONS];
 float numNoise[NUM_LOCATIONS];
 float numDynamic[NUM_LOCATIONS];
 float noiseEntropy = 0.7;
+
+int timestamp_offset = 0;
 
 CTemporal *temporalModelArray[NUM_LOCATIONS];
 bool bulkEstimate = false;
@@ -208,20 +213,31 @@ int load(const char* namePattern)
 {
 	FILE *file = NULL;
 	char filename[10000];
+	int time = 0;
 	for (int p = 0;p<NUM_LOCATIONS;p++)
 	{
 		sprintf(filename,"%s_%i.txt",namePattern,p);
 		//fprintf(stdout,"%s_%i.txt\n",namePattern,p);
 		file = fopen(filename,"r");
 		if (file == NULL){
-			 printf("File %s not found.\n",filename);
-			 exit(-1);
+		    perror("fopen");
+		    char * buf;
+		    char * ptr;
+		    ptr = getcwd(buf, 1024);
+            std::cout << ptr << '\n';
+			printf("File %s not found.\n",filename);
+			exit(-1);
 		}
 		length = 0;
 		while (feof(file) == 0)
 		{
-			fscanf(file,"%i",&dummyInt);
+			fscanf(file,"%i %i",&time, &dummyInt);
 			reality[p][length++] = dummyInt;
+			// set offset for datasets
+			if(timestamp_offset == 0){
+			    timestamp_offset = time;
+			}
+
 		}
 		fclose(file);
 	}
@@ -255,7 +271,7 @@ void buildModels()
 			if (plan[i] == p){
 				sampleTimes[numSamples] = i*60;
 				samples[numSamples] = reality[p][i];
-				temporalModelArray[p]->add(sampleTimes[numSamples],samples[numSamples]);
+				temporalModelArray[p]->add(sampleTimes[numSamples] + timestamp_offset,samples[numSamples]);
 				numSamples++;
 			}
 		}
@@ -269,7 +285,7 @@ void calculateProbabilities()
     if(!bulkEstimate) {
         for (int p = 0; p < NUM_LOCATIONS; p++) {
             for (int i = planOffset; i < planLength + planOffset; i++) {
-                estimation[p][i] = prob = temporalModelArray[p]->estimate(i * 60);
+                estimation[p][i] = prob = temporalModelArray[p]->estimate(i * 60 + timestamp_offset);
 
                 if (prob <= 0 || prob >= 1) {
                     entropy[p][i] = 0;
@@ -326,8 +342,8 @@ void calculateErrors()
                 if (plan[i] != p) {
                     //printf("estimate: %f\n" , temporalModelArray[p]->estimate(i*60));
                     absError[i] +=
-                            fabs((temporalModelArray[p]->estimate(i * 60) > 0.5) - reality[p][i]) * numDynamic[p];
-                    probError[i] += fabs(temporalModelArray[p]->estimate(i * 60) - reality[p][i]) * numDynamic[p];
+                            fabs((temporalModelArray[p]->estimate(i * 60 + timestamp_offset) > 0.5) - reality[p][i]) * numDynamic[p];
+                    probError[i] += fabs(temporalModelArray[p]->estimate(i * 60 + timestamp_offset) - reality[p][i]) * numDynamic[p];
                 }
                 cellsUpdated += numDynamic[p];
             }
@@ -405,8 +421,8 @@ void evaluatePrecision()
 		for (int p = 0;p<NUM_LOCATIONS;p++)
 		{
 			if (plan[i] != p){
-				absError[i]  += fabs((temporalModelArray[p]->estimate(i*60)>0.5)-reality[p][i]);		
-				probError[i] += fabs(temporalModelArray[p]->estimate(i*60)-reality[p][i]);
+				absError[i]  += fabs((temporalModelArray[p]->estimate(i*60 + timestamp_offset)>0.5)-reality[p][i]);
+				probError[i] += fabs(temporalModelArray[p]->estimate(i*60 + timestamp_offset)-reality[p][i]);
 			}
 		}
 		absError[i]= absError[i]/NUM_LOCATIONS;	
@@ -466,6 +482,8 @@ int main(int argc,char *argv[])
 		else if (argv[4][0] == 'M') temporalModelArray[p] = new CTimeMean(p);
 		else if (argv[4][0] == 'G') temporalModelArray[p] = new CPerGaM(p);
 		else if (argv[4][0] == 'H') temporalModelArray[p] = new CHyperTime(p);
+		else if (argv[4][0] == 'L') temporalModelArray[p] = new CLFrelem(p);
+		else if (argv[4][0] == 'N') temporalModelArray[p] = new CNLFrelem(p);
         else if (argv[4][0] == 'D') {
             temporalModelArray[p] = new CPythonForkDPGMM(p);
             bulkEstimate = true;
@@ -483,9 +501,9 @@ int main(int argc,char *argv[])
 		}
 	}
 
-
-//	for (int day = 0;day<16*7;day++)
-	for (int day = 0;day<8*7;day++)
+    //calculateProbabilities();
+//	for (int day = 0;day<8*7;day++)
+	for (int day = 0;day<16*7;day++)
 	{
 	    std::cerr << day << std::endl;
 //        std::cout << day << std::endl;
@@ -504,6 +522,13 @@ int main(int argc,char *argv[])
 	}
 	summarizeErrors();
 	for (int p = 0;p<NUM_LOCATIONS;p++) temporalModelArray[p]->print();
+	for (int p = 0;p<NUM_LOCATIONS;p++){
+        std::stringstream tmp_path;
+        tmp_path << "stored_models/" << argv[4] << "_" << p;
+        std::string t_path = tmp_path.str();
+        char * path = &t_path[0];
+        temporalModelArray[p]->save(path);
+	}
 //	for (int i = 0;i<86400;i+=60){
 //		printf("%i %.3f\n",i,roomModel[2].estimate(i+16*7*86400,0));
 //	}

@@ -232,7 +232,29 @@ int CFrelement::load(char* name)
 	return 0;
 }
 
+int CFrelement::save(FILE* file, bool lossy)
+{
+    int pos = 10 + numElements * 5;
+    double *array = new double[pos];
+    pos = exportToArray(array, 1);
+    fwrite(&pos, sizeof(int), 1, file); //num of elements in array
+    fwrite(array, sizeof(double), pos, file);
+    delete[] array;
+    return 0;
+}
 
+int CFrelement::load(FILE* file)
+{
+    int pos;
+    fread(&pos, sizeof(int), 1, file);
+    double *array = new double[pos];
+    fread(array, sizeof(double), pos, file);
+    importFromArray(array, pos);
+    delete[] array;
+    return 0;
+}
+
+/*
 int CFrelement::save(FILE* file,bool lossy)
 {
 	int frk = numElements;
@@ -245,9 +267,9 @@ int CFrelement::save(FILE* file,bool lossy)
 int CFrelement::load(FILE* file)
 {
 	int frk = numElements;
-	fwrite(&frk,sizeof(uint32_t),1,file);
-	fwrite(&storedGain,sizeof(float),1,file);
-	fwrite(storedFrelements,sizeof(SFrelement),numElements,file);
+	fread(&frk, sizeof(uint32_t), 1, file);
+	fread(&storedGain,sizeof(float),1,file);
+	fread(storedFrelements,sizeof(SFrelement),numElements,file);
 	return 0;
-}
+}*/
 

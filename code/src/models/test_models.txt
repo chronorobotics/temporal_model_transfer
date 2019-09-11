@@ -1,8 +1,10 @@
-FreMEn 	 1 2 3 4 5
-None     0
-Mean	 0
-Interval 1 24 96 288 720 1440
-Adaptive 1 10 50 100 500 1000
-GMM 	 1 2 3 4 5
-DPGMM    15
+FreMEn 1 2 3 4
+#LFreMEn 1 2 3 4 5 6
+#NLFreMEn 1 2 3 4 5 6
+#None 0
+#Mean 0
+#Interval 1 24 96 288 720 1440
+#Adaptive 1 10 50 100 500 1000
+#GMM 	 1 2 3 4 5
+#DPGMM    15
 #HyT-EM   1 2 3 4 5    # currently not working

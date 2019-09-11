@@ -44,32 +44,32 @@ def any_room_to_file(room_f, goal):
 	room_f.close()
 	
 
-outside_f = open("presence_0.txt", "w")
+outside_f = open("presence_minutes_0.txt", "w")
 any_room_to_file(outside_f, "outside")
 
-apartment_center_f = open("presence_1.txt", "w")
+apartment_center_f = open("presence_minutes_1.txt", "w")
 any_room_to_file(apartment_center_f, "apartment_center")
 
-master_bathroom_f = open("presence_2.txt", "w")
+master_bathroom_f = open("presence_minutes_2.txt", "w")
 any_room_to_file(master_bathroom_f, "master_bathroom")
 
-office_f = open("presence_3.txt", "w")
+office_f = open("presence_minutes_3.txt", "w")
 any_room_to_file(office_f, "office")
 
-corridor_f = open("presence_4.txt", "w")
+corridor_f = open("presence_minutes_4.txt", "w")
 any_room_to_file(corridor_f, "corridor")
 
-second_bathroom_f = open("presence_5.txt", "w")
+second_bathroom_f = open("presence_minutes_5.txt", "w")
 any_room_to_file(second_bathroom_f,"second_bathroom")
 
-second_bedroom_f = open("presence_6.txt", "w")
+second_bedroom_f = open("presence_minutes_6.txt", "w")
 any_room_to_file(second_bedroom_f, "second_bedroom")
 
-living_room_f = open("presence_7.txt", "w")
+living_room_f = open("presence_minutes_7.txt", "w")
 any_room_to_file(living_room_f, "living_room")
 
-master_bedroom_f = open("presence_8.txt", "w")
+master_bedroom_f = open("presence_minutes_8.txt", "w")
 any_room_to_file(master_bedroom_f, "master_bedroom")
 
-kitchen_f = open("presence_9.txt", "w")
+kitchen_f = open("presence_minutes_9.txt", "w")
 any_room_to_file(kitchen_f, "kitchen")
